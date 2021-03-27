@@ -1,5 +1,5 @@
 // Nose is a simple triangle
-export function playTri(x, y, context, playLength = 0.5) {
+export function playTri(x, y, context, playLength = 0.5, startTime = 0) {
     const osc = new OscillatorNode(context, {
         type: 'triangle',
         detune: 0,
@@ -7,13 +7,13 @@ export function playTri(x, y, context, playLength = 0.5) {
     });
     const gain = new GainNode(context);
     osc.connect(gain).connect(context.destination);
-    gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + playLength);
-    osc.start();
-    osc.stop(context.currentTime + playLength);
+    gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + startTime + playLength);
+    osc.start(context.currentTime + startTime);
+    osc.stop(context.currentTime + startTime + playLength);
 }
 
-// Frequency modulation
-export function playPulse(x, y, context, playLength = 0.5) {
+// Frequency modulation -> NOT USING THIS ATM
+export function playPulse(x, y, context, playLength = 0.5, startTime = 0) {
     const osc = context.createOscillator();
     osc.type = 'sine';
     osc.frequency.value = y;
@@ -33,7 +33,7 @@ export function playPulse(x, y, context, playLength = 0.5) {
 }
 
 // Noise buffer for hihat
-export function playNoise(x, y, context, playLength = 0.1) {
+export function playNoise(x, y, context, playLength = 0.1, startTime = 0) {
     const bufferSize = context.sampleRate * playLength;
     const buffer = context.createBuffer(1, bufferSize, context.sampleRate); // create an empty buffer
     let data = buffer.getChannelData(0); // get data
@@ -52,12 +52,12 @@ export function playNoise(x, y, context, playLength = 0.1) {
     bandpass.frequency.value = x;
 
     const gain = context.createGain();
-    gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + playLength)
+    gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + startTime + playLength)
 
     // connect our graph
     noise.connect(bandpass).connect(gain).connect(context.destination);
-    noise.start();
-    noise.stop(context.currentTime + playLength);
+    noise.start(context.currentTime + startTime);
+    noise.stop(context.currentTime + startTime + playLength);
 }
 
 // Noise buffer for kick

@@ -67,8 +67,6 @@
 
 
         function tidiedPoseData(pose) {
-            // console.log(pose.score);
-
             // If it's a good enough pose, save it
             if (pose.score > 0.51) {
                 window.lastKnownGoodPose = pose;
@@ -81,12 +79,11 @@
                 "rightShoulder", "rightElbow", "rightWrist",
                 "leftShoulder", "leftElbow", "leftWrist"
             ];
-            const filteredParts = pose.keypoints.filter((point) => {
+
+            return pose.keypoints.filter((point) => {
                 delete point.score; // don't need this
                 return usedParts.includes(point.part);
-            })
-
-            return filteredParts;
+            });
         }
 
         function poseAsLimbs(pose) {
@@ -96,31 +93,51 @@
                 leftShoulder, rightShoulder, leftElbow, rightElbow, leftWrist, rightWrist
 
             */
+            return {
+                leftBicep: [
+                    pose[0].position,
+                    pose[2].position,
+                    "bodyparts/bicep_l.png"
+                ],
+                leftForearm: [
+                    pose[2].position,
+                    pose[4].position,
+                    "bodyparts/forearm_l.png"
+                ],
 
-            const limbs = {
-                leftBicep: [pose[0].position, pose[2].position, "bodyparts/bicep_l.png"],
-                leftForearm: [pose[2].position, pose[4].position, "bodyparts/forearm_l.png"],
-
-                rightBicep: [pose[1].position, pose[3].position, "bodyparts/bicep_r.png"],
-                rightForearm: [pose[3].position, pose[5].position, "bodyparts/forearm_r.png"]
+                rightBicep: [
+                    pose[1].position,
+                    pose[3].position,
+                    "bodyparts/bicep_r.png"
+                ],
+                rightForearm: [
+                    pose[3].position,
+                    pose[5].position,
+                    "bodyparts/forearm_r.png"
+                ]
             };
+        }
+        function drawImage(image, x, y, scale, rotation) {
+            ctx.save();
+            ctx.setTransform(scale, 0, 0, scale, x, y); // sets scale and origin
+            ctx.rotate(rotation); // rads
+            ctx.drawImage(image, -image.width / 2, -image.height / 2);
+            ctx.restore();
+        }
 
-            return limbs;
-        }
         // Imagine how often you'll typo drawLimb as drawLine
-        function drawLimb(from, to, color) {
-            if (color !== null) {
-                ctx.strokeStyle = color;
-            }
-            ctx.beginPath();
-            ctx.moveTo(from.x, from.y);
-            ctx.lineTo(to.x, to.y);
-            ctx.lineWidth = 2;
-            ctx.stroke();
-        }
+        function drawLimb(from, to, img) {
+
+            // let rotDeg = Math.atan2(to.y - from.y, to.x - from.x) * 180 / Math.PI;
+
+            let angleRadians = Math.atan2(to.y - from.y, to.x - from.x);
+            let image = new Image();
+            image.src = img;
+            console.log(image);
+            drawImage(image, from.x, from.y, 1, angleRadians);
+        };
 
         function drawPose(pose) {
-
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 
@@ -135,12 +152,13 @@
 
             Object.values(poseAsLimbs(pose)).forEach((limb) => {
                 drawLimb(limb[0], limb[1], limb[2]);
-            })
-        }
+            });
+        };
 
         const stream = new PoseStream({
-            delay: 10
+            delay: 100
         });
+
         stream.start()
 
         stream.addEventListener('pose', (event) => {
