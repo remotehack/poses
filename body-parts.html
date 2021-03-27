@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        output {
+            display: block;
+            white-space: pre;
+        }
+
+        #canvasholder {
+            /* background-image: url(ben.jpg); */
+            background-size: cover;
+            width: 640px;
+            height: 480px;
+            position: relative;
+        }
+
+        #canvasholder canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ccc
+        }
+
+        video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: .4;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <div id="canvasholder"><canvas></canvas></div>
+
+    <output></output>
+
+    <script src="https://unpkg.com/@tensorflow/tfjs"></script>
+    <script src="https://unpkg.com/@tensorflow-models/posenet">
+    </script>
+    <script type="module">
+        import { getDemoPose, getPoseFromImage, PoseStream } from './poses.js';
+        const canvas = document.querySelector("#canvasholder canvas");
+
+        canvas.width = 640;
+        canvas.height = 480;
+
+        const ctx = canvas.getContext('2d');
+
+        window.lastKnownGoodPose = null;
+
+
+        function tidiedPoseData(pose) {
+            // console.log(pose.score);
+
+            // If it's a good enough pose, save it
+            if (pose.score > 0.51) {
+                window.lastKnownGoodPose = pose;
+            }
+            // if we've got one saved then use it
+            if (window.lastKnownGoodPose) {
+                pose = window.lastKnownGoodPose;
+            }
+            const usedParts = [
+                "rightShoulder", "rightElbow", "rightWrist",
+                "leftShoulder", "leftElbow", "leftWrist"
+            ];
+            const filteredParts = pose.keypoints.filter((point) => {
+                delete point.score; // don't need this
+                return usedParts.includes(point.part);
+            })
+
+            return filteredParts;
+        }
+
+        function poseAsLimbs(pose) {
+            /*
+                Actual order that we get is:
+
+                leftShoulder, rightShoulder, leftElbow, rightElbow, leftWrist, rightWrist
+
+            */
+
+            const limbs = {
+                leftBicep: [pose[0].position, pose[2].position, "bodyparts/bicep_l.png"],
+                leftForearm: [pose[2].position, pose[4].position, "bodyparts/forearm_l.png"],
+
+                rightBicep: [pose[1].position, pose[3].position, "bodyparts/bicep_r.png"],
+                rightForearm: [pose[3].position, pose[5].position, "bodyparts/forearm_r.png"]
+            };
+
+            return limbs;
+        }
+        // Imagine how often you'll typo drawLimb as drawLine
+        function drawLimb(from, to, color) {
+            if (color !== null) {
+                ctx.strokeStyle = color;
+            }
+            ctx.beginPath();
+            ctx.moveTo(from.x, from.y);
+            ctx.lineTo(to.x, to.y);
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        function drawPose(pose) {
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+
+            // do some points
+            pose.forEach((part) => {
+                const pos = part.position;
+                ctx.fillStyle = "#000";
+                ctx.beginPath();
+                ctx.arc(pos.x, pos.y, 3, 0, Math.PI * 2, true);
+                ctx.fill();
+            });
+
+            Object.values(poseAsLimbs(pose)).forEach((limb) => {
+                drawLimb(limb[0], limb[1], limb[2]);
+            })
+        }
+
+        const stream = new PoseStream({
+            delay: 10
+        });
+        stream.start()
+
+        stream.addEventListener('pose', (event) => {
+            drawPose(tidiedPoseData(event.data))
+        })
+    </script>
+
+
+
+</body>
+
+</html>

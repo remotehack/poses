@@ -1,5 +1,5 @@
 // Nose is a simple triangle
-export function playTri(x, y, context, playLength = 1) {
+export function playTri(x, y, context, playLength = 0.5) {
     const osc = new OscillatorNode(context, {
         type: 'triangle',
         detune: 0,
@@ -13,13 +13,13 @@ export function playTri(x, y, context, playLength = 1) {
 }
 
 // Frequency modulation
-export function playPulse(x, y, context, playLength = 1) {
+export function playPulse(x, y, context, playLength = 0.5) {
     const osc = context.createOscillator();
     osc.type = 'sine';
     osc.frequency.value = y;
 
     const amp = context.createGain();
-    amp.gain.value = 1;
+    amp.gain.value = 0.5;
 
     const lfo = context.createOscillator();
     lfo.type = 'square';
@@ -65,11 +65,11 @@ export function playKick(x, y, context, playLength = 0.5, startTime = 0.5) {
     const osc = context.createOscillator();
     const gain = context.createGain();
 
-    osc.frequency.setValueAtTime(y, context.currentTime);
-    gain.gain.setValueAtTime(1, context.currentTime);
+    osc.frequency.value = y;
+    gain.gain.value = 1;
 
-    osc.frequency.exponentialRampToValueAtTime(0.01, context.currentTime + playLength);
-    gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + playLength);
+    osc.frequency.exponentialRampToValueAtTime(0.01, context.currentTime + startTime + playLength);
+    gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + startTime + playLength);
 
     // connect our graph
     osc.connect(gain).connect(context.destination);

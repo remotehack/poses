@@ -45,7 +45,7 @@
             // playPulse(elbow.x, elbow.y, actx);
 
             const wrist = ev.data.keypoints[10].position;
-            // playTri(elbow.x, elbow.y, actx);
+            playTri(wrist.x, wrist.y, actx);
         })
 
         const startButton = document.querySelector('#start-button');
