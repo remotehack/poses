@@ -21,7 +21,7 @@
         src: ['./drum-model/ride.mp3']
     });
 
-    var state = 0;
+    var state = 2;
 
     async function init() {
         const modelURL = URL + "model.json";
@@ -72,9 +72,18 @@
             weights.push(prediction[i].probability);
         }
 
-        const newstate = weights.indexOf(Math.max(weights));
-        if (newstate != state) {
-            if 
+        const newState = weights.indexOf(Math.max(...weights));
+        if (newState != state) {
+            console.log('new state', newState);
+            if (newState === 0) {
+                console.log('snare');
+                snare.play();
+            }
+            if (newState === 1) {
+                console.log('ride');
+                ride.play();
+            }
+            state = newState;
         }
 
         // finally draw the poses
