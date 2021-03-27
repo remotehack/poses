@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #itis {
+            width: 640px;
+            height: 480px;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 3em;
+            position: absolute;
+            transition: all .1s;
+            transform: scaleX(-1);
+            animation: spasm .4s ease forwards infinite;
+        }
+
+
+        video {
+            opacity: .2;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        @keyframes spasm {
+
+            0%,
+            100% {
+                transform: scale(1) scaleX(-1);
+            }
+
+            50% {
+                transform: scale(1.2) scaleX(-1);
+            }
+        }
+
+        #pipes {
+            position: relative;
+
+            width: 640px;
+            height: 480px;
+        }
+
+        #pipes li {
+            background: green url('pipe1.png') top left no-repeat;
+            display: block;
+            position: absolute;
+            height: 100px;
+            width: 100px;
+        }
+
+        /* posiiton top pipe */
+        #pipes li:nth-child(1),
+        #pipes li:nth-child(2n+1) {
+            top: 0;
+            background: red;
+        }
+        #pipes li:nth-child(2n) {
+            bottom: 0;
+            background: blue;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="itis">
+        <h1 id="leftEye">🐦</h1>
+        <h1 id="rightEye">🐦</h1>
+        <h1 id="nose">🐦</h1>
+        <ul id="pipes">
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+    </div>
+
+
+
+    <script src="https://unpkg.com/@tensorflow/tfjs"></script>
+    <script src="https://unpkg.com/@tensorflow-models/posenet">
+    </script>
+    <script type="module">
+        import { PoseStream } from './poses.js';
+
+        function intersectRect(rectA, rectB) {
+            return !(
+                rectB.left >= rectA.right ||
+                rectB.right <= rectA.left ||
+                rectB.top >= rectA.bottom ||
+                rectB.bottom <= rectA.top
+            );
+        }
+
+        
+
+
+
+
+        // Video stream - in progress
+        const stream = new PoseStream({ delay: 10 });
+        stream.start()
+
+
+        stream.addEventListener('pose', (event) => {
+
+            let { x, y } = event.data.keypoints[0].position
+
+            nose.style.left = ((x / stream.video.width) * 100) + '%'
+            nose.style.top = ((y / stream.video.height) * 60) + '%'
+
+
+
+            leftEye.style.left = ((event.data.keypoints[1].position.x / stream.video.width) * 100) + '%'
+            leftEye.style.top = ((event.data.keypoints[1].position.y / stream.video.height) * 60) + '%'
+
+
+            rightEye.style.left = ((event.data.keypoints[2].position.x / stream.video.width) * 100) + '%'
+            rightEye.style.top = ((event.data.keypoints[2].position.y / stream.video.height) * 60) + '%'
+
+
+
+
+        })
+    </script>
+
+
+
+</body>
+
+</html>
