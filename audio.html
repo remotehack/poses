@@ -1,0 +1,59 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio</title>
+</head>
+
+<body>
+
+    <h2>Nose</h2>
+
+    <button id="play-button" data-playing="false">Play</button>
+
+
+    <script>
+
+        // nose, left eye, right eye, left ear, right ear, left shoulder, right shoulder, left elbow, right elbow, left wrist, right wrist, left hip, right hip, left knee, right knee, left ankle, right ankle
+        // nose, eye, ear, shoulder, wrist, elbow
+
+        const actx = new AudioContext();
+
+        // I might pass context in...
+        function playNose(x, y) {
+            const osc = new OscillatorNode(actx, {
+                type: 'triangle',
+                detune: 0,
+                frequncy: x
+            });
+
+        }
+
+        // play/pause functionality
+        const playButton = document.querySelector('#play-button');
+        playButton.addEventListener('click', function () {
+
+            // check if context is in suspended state (autoplay policy)
+            if (actx.state === 'suspended') {
+                actx.resume();
+            }
+
+            // play or pause track depending on state
+            if (this.dataset.playing === 'false') {
+                play();
+                this.dataset.playing = 'true';
+                this.innerText = 'Pause';
+            } else if (this.dataset.playing === 'true') {
+                stop();
+                this.dataset.playing = 'false';
+                this.innerText = 'Play';
+            }
+
+        }, false);
+
+    </script>
+</body>
+
+</html>
