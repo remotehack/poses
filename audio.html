@@ -14,22 +14,33 @@
     <button id="play-button" data-playing="false">Play</button>
 
 
-    <script>
+    <script src="https://unpkg.com/@tensorflow/tfjs"></script>
+    <script src="https://unpkg.com/@tensorflow-models/posenet"></script>
+    <script type="module">
+        import { PoseStream, getDemoPose } from './poses.js';
+        // all noises should be (x, y, context)
+        import { playNose, playEar, playEye, playShoulder, playWrist, playElbow } from './noises.js';
 
-        // nose, left eye, right eye, left ear, right ear, left shoulder, right shoulder, left elbow, right elbow, left wrist, right wrist, left hip, right hip, left knee, right knee, left ankle, right ankle
+        // video
+        const stream = new PoseStream();
+        stream.start()
+
+        stream.addEventListener('pose', (ev) => {
+            console.log(ev.data);
+            // score, keypoints[].part, position, 
+        })
+
+        // setInterval(() => {
+        //     if (stream.pose) {
+        //         console.log(stream.pose)
+        //         const { x, y } = stream.pose.keypoints[0].position
+        //         playNose(x, y)
+        //     }
+        // }, 2000)
+
         // nose, eye, ear, shoulder, wrist, elbow
 
         const actx = new AudioContext();
-
-        // I might pass context in...
-        function playNose(x, y) {
-            const osc = new OscillatorNode(actx, {
-                type: 'triangle',
-                detune: 0,
-                frequncy: x
-            });
-
-        }
 
         // play/pause functionality
         const playButton = document.querySelector('#play-button');
@@ -42,11 +53,16 @@
 
             // play or pause track depending on state
             if (this.dataset.playing === 'false') {
-                play();
+                // playNose(100, 0, actx); // tri
+                // playEar(100, 100, actx); // freq mod
+                playEye(100, 100, actx); // hihat
+                // playShoulder(100, 100, actx, 1); // kick
+                // playWrist(100, 100, actx); // ?
+                // playElbow(100, 100, actx); // ?
                 this.dataset.playing = 'true';
                 this.innerText = 'Pause';
             } else if (this.dataset.playing === 'true') {
-                stop();
+                // stop();
                 this.dataset.playing = 'false';
                 this.innerText = 'Play';
             }

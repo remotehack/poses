@@ -20,6 +20,79 @@ export const getPoseFromImage = async (imageElement) => {
     return pose;
 }
 
+export class PoseEvent extends Event {
+    constructor(data) {
+        super('pose')
+        this.data = data;
+    }
+}
+
+
+
+
+export class PoseStream extends EventTarget {
+    constructor(root) {
+        super()
+        this.root = root || document.body
+        this.delay = 100
+    }
+    async start() {
+        this.video = document.createElement('video')
+        this.video.style.transform = 'scaleX(-1)'
+        this.root.appendChild(this.video);
+
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+
+        this.video.srcObject = stream;
+        this.video.width = 640;
+        this.video.height = 480;
+
+        await new Promise(resolve => setTimeout(resolve, 500))
+
+        this.video.play()
+
+        this.pose = null;
+
+        this.control = new AbortController();
+        this.loop()
+
+    }
+
+    stop() {
+        this.control.abort()
+    }
+
+    async loop() {
+
+        const net = await posenet.load();
+
+        const scaleFactor = 0.50;
+        const flipHorizontal = true;
+        const outputStride = 16;
+
+        while (!this.control.signal.aborted) {
+
+            try {
+                this.pose = await net.estimateSinglePose(this.video, { scaleFactor, flipHorizontal, outputStride });
+
+
+                const ev = new MessageEvent('pose', { data: this.pose });
+
+
+                this.dispatchEvent(ev)
+            } catch (e) {
+                console.log(e)
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 200))
+
+        }
+
+        console.log('stopped')
+    }
+}
+
+
 
 export const getPoseFromVideo = (video, callback) => {
 
