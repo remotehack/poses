@@ -1,0 +1,25 @@
+{
+  "name": "poses",
+  "version": "1.0.0",
+  "description": "https://github.com/remotehack/remotehack.github.io/issues/109",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "live-server ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/remotehack/poses.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/remotehack/poses/issues"
+  },
+  "homepage": "https://github.com/remotehack/poses#readme",
+  "dependencies": {
+    "@tensorflow-models/posenet": "^2.2.2",
+    "live-server": "^1.2.1"
+  }
+}

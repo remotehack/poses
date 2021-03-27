@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        img {
+            max-width: 300px;
+        }
+
+        output {
+            display: block;
+            white-space: pre;
+        }
+    </style>
+</head>
+
+<body>
+    <img src="ben.jpg" id="ben" />
+
+    <output></output>
+
+    <script src="https://unpkg.com/@tensorflow/tfjs"></script>
+    <script src="https://unpkg.com/@tensorflow-models/posenet">
+    </script>
+    <script type="module">
+        import { getPoses } from './poses.js';
+
+        document.querySelector('output').innerHTML = JSON.stringify(getPoses(), null, 2)
+
+        getPoseFromImage(document.getElementById('ben'))
+            .then(pose => {
+                document.querySelector('output').innerHTML = JSON.stringify(pose, null, 2)
+            })
+    </script>
+
+
+
+</body>
+
+</html>
