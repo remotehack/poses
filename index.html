@@ -8,6 +8,63 @@
     <title>Document</title>
 
     <style>
+        body,
+        nav,
+        ul,
+        li {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        body {
+            --maroon: #1a090d;
+            --violet: #4a314d;
+            --lavendar: #6b6570;
+            --green: #a8ba9a;
+            --apple: #ace894;
+
+            padding: 40px;
+            font-family: sans-serif;
+            color: var(--maroon);
+            font-size: 160%;
+            line-height: 1.6;
+        }
+
+        nav ul {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            grid-template-rows: repeat(2, 30vh);
+        }
+
+        nav ul li {
+            display: inline-block;
+            padding: 40px;
+            box-sizing: border-box;
+            border: 20px solid var(--maroon);
+        }
+
+        nav ul li:nth-of-type(3n-2) {
+            border-color: var(--violet);
+        }
+
+        nav ul li:nth-of-type(3n-1) {
+            border-color: var(--lavendar);
+            grid-row: span 2;
+        }
+
+        nav ul li:nth-of-type(3n) {
+            border-color: var(--green);
+        }
+
+        nav li a {
+            text-decoration: none;
+        }
+
+        nav li a:hover {
+            text-decoration: underline;
+        }
+
+
         img {
             max-width: 300px;
         }
@@ -20,9 +77,33 @@
 </head>
 
 <body>
-    <!-- <img src="ben.jpg" id="ben" /> -->
 
-    <h1>Dancing</h1>
+    <h1>Poses</h1>
+
+    <nav>
+        <ul>
+            <li>
+                <a href="/audio.html">
+                    🤧 🎶 Noiseinim
+                </a>
+            </li>
+            <li>
+                <a href="/bodyparts.html">
+                    Lines and dots
+                </a>
+            </li>
+            <li>
+                <a href="/it-is-what-it-is.html">
+                    It is what it is
+                </a>
+            </li>
+            <li>
+                <a href="/floatingNose.html">
+                    🥔 Potato
+                </a>
+            </li>
+        </ul>
+    </nav>
 
     <!-- <div id="container"></div>
     <h1>👃 <span id="n"></span></h1>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #itis {
+            width: 640px;
+            height: 480px;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 3em;
+            position: absolute;
+            transition: all .1s;
+        }
+
+        video {
+            opacity: .2;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="itis">
+        <h1 id="nose">👄</h1>
+        <h1 id="leftEye">👁</h1>
+        <h1 id="rightEye">👁</h1>
+    </div>
+
+    <script src="https://unpkg.com/@tensorflow/tfjs"></script>
+    <script src="https://unpkg.com/@tensorflow-models/posenet">
+    </script>
+    <script type="module">
+        import { PoseStream } from './poses.js';
+
+
+        // Video stream - in progress
+        const stream = new PoseStream({ delay: 10 });
+        stream.start()
+
+
+        stream.addEventListener('pose', (event) => {
+
+            let { x, y } = event.data.keypoints[0].position
+
+            nose.style.left = ((x / stream.video.width) * 100) + '%'
+            nose.style.top = ((y / stream.video.height) * 60) + '%'
+
+
+
+            leftEye.style.left = ((event.data.keypoints[1].position.x / stream.video.width) * 100) + '%'
+            leftEye.style.top = ((event.data.keypoints[1].position.y / stream.video.height) * 60) + '%'
+
+
+            rightEye.style.left = ((event.data.keypoints[2].position.x / stream.video.width) * 100) + '%'
+            rightEye.style.top = ((event.data.keypoints[2].position.y / stream.video.height) * 60) + '%'
+        })
+    </script>
+
+
+
+</body>
+
+</html>

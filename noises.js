@@ -1,5 +1,5 @@
 // Nose is a simple triangle
-export function playNose(x, y, context) {
+export function playTri(x, y, context, playLength = 1) {
     const osc = new OscillatorNode(context, {
         type: 'triangle',
         detune: 0,
@@ -7,13 +7,13 @@ export function playNose(x, y, context) {
     });
     const gain = new GainNode(context);
     osc.connect(gain).connect(context.destination);
-    gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + 1);
+    gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + playLength);
     osc.start();
-    osc.stop(context.currentTime + 1);
+    osc.stop(context.currentTime + playLength);
 }
 
 // Frequency modulation
-export function playEar(x, y, context, playLength = 1) {
+export function playPulse(x, y, context, playLength = 1) {
     const osc = context.createOscillator();
     osc.type = 'sine';
     osc.frequency.value = y;
@@ -33,7 +33,7 @@ export function playEar(x, y, context, playLength = 1) {
 }
 
 // Noise buffer for hihat
-export function playEye(x, y, context, playLength = 1) {
+export function playNoise(x, y, context, playLength = 0.1) {
     const bufferSize = context.sampleRate * playLength;
     const buffer = context.createBuffer(1, bufferSize, context.sampleRate); // create an empty buffer
     let data = buffer.getChannelData(0); // get data
@@ -47,18 +47,21 @@ export function playEye(x, y, context, playLength = 1) {
     let noise = context.createBufferSource();
     noise.buffer = buffer;
 
-    let bandpass = context.createBiquadFilter();
+    const bandpass = context.createBiquadFilter();
     bandpass.type = 'bandpass';
     bandpass.frequency.value = x;
 
+    const gain = context.createGain();
+    gain.gain.exponentialRampToValueAtTime(0.01, context.currentTime + playLength)
+
     // connect our graph
-    noise.connect(bandpass).connect(context.destination);
+    noise.connect(bandpass).connect(gain).connect(context.destination);
     noise.start();
     noise.stop(context.currentTime + playLength);
 }
 
 // Noise buffer for kick
-export function playShoulder(x, y, context, playLength = 0.5) {
+export function playKick(x, y, context, playLength = 0.5, startTime = 0.5) {
     const osc = context.createOscillator();
     const gain = context.createGain();
 
@@ -70,8 +73,8 @@ export function playShoulder(x, y, context, playLength = 0.5) {
 
     // connect our graph
     osc.connect(gain).connect(context.destination);
-    osc.start();
-    osc.stop(context.currentTime + playLength);
+    osc.start(context.currentTime + startTime);
+    osc.stop(context.currentTime + startTime + playLength);
 }
 //
 export function playWrist() { }

@@ -11,7 +11,7 @@
 
     <h2>Nose</h2>
 
-    <button id="play-button" data-playing="false">Play</button>
+    <button id="start-button" data-playing="false">Start!</button>
 
 
     <script src="https://unpkg.com/@tensorflow/tfjs"></script>
@@ -19,32 +19,37 @@
     <script type="module">
         import { PoseStream, getDemoPose } from './poses.js';
         // all noises should be (x, y, context)
-        import { playNose, playEar, playEye, playShoulder, playWrist, playElbow } from './noises.js';
-
-        // video
-        const stream = new PoseStream();
-        stream.start()
-
-        stream.addEventListener('pose', (ev) => {
-            console.log(ev.data);
-            // score, keypoints[].part, position, 
-        })
-
-        // setInterval(() => {
-        //     if (stream.pose) {
-        //         console.log(stream.pose)
-        //         const { x, y } = stream.pose.keypoints[0].position
-        //         playNose(x, y)
-        //     }
-        // }, 2000)
-
-        // nose, eye, ear, shoulder, wrist, elbow
+        import { playTri, playPulse, playNoise, playKick } from './noises.js';
 
         const actx = new AudioContext();
 
         // play/pause functionality
-        const playButton = document.querySelector('#play-button');
-        playButton.addEventListener('click', function () {
+        // video
+        const stream = new PoseStream({ delay: 1000 });
+
+        // play noises when poses happen
+        stream.addEventListener('pose', (ev) => {
+            console.log(ev.data);
+            // score, keypoints[].part, position x y, score
+            const nose = ev.data.keypoints[0].position;
+            playNoise(nose.x, nose.y, actx);
+
+            const eye = ev.data.keypoints[2].position;
+            playKick(eye.x, eye.y, actx);
+
+            const ear = ev.data.keypoints[4].position;
+
+            const shoulder = ev.data.keypoints[6].position;
+
+            const elbow = ev.data.keypoints[8].position;
+            // playPulse(elbow.x, elbow.y, actx);
+
+            const wrist = ev.data.keypoints[10].position;
+            // playTri(elbow.x, elbow.y, actx);
+        })
+
+        const startButton = document.querySelector('#start-button');
+        startButton.addEventListener('click', function () {
 
             // check if context is in suspended state (autoplay policy)
             if (actx.state === 'suspended') {
@@ -53,18 +58,13 @@
 
             // play or pause track depending on state
             if (this.dataset.playing === 'false') {
-                // playNose(100, 0, actx); // tri
-                // playEar(100, 100, actx); // freq mod
-                playEye(100, 100, actx); // hihat
-                // playShoulder(100, 100, actx, 1); // kick
-                // playWrist(100, 100, actx); // ?
-                // playElbow(100, 100, actx); // ?
                 this.dataset.playing = 'true';
-                this.innerText = 'Pause';
+                this.innerText = 'Stop!';
+                stream.start()
             } else if (this.dataset.playing === 'true') {
-                // stop();
+                stream.stop();
                 this.dataset.playing = 'false';
-                this.innerText = 'Play';
+                this.innerText = 'Start';
             }
 
         }, false);

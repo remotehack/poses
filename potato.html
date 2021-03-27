@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        h1 {
+            font-size: 3em;
+            position: absolute;
+            transition: all .5s;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1 data-part="nose">👃</h1>
+    <h1 data-part="leftEye">👁</h1>
+    <h1 data-part="rightEye">👁</h1>
+    <h1 data-part="leftEar">🌽</h1>
+
+    <h1 data-part="rightEar">👂</h1>
+    <h1 data-part="leftShoulder">🦿</h1>
+    <h1 data-part="rightShoulder">🐘</h1>
+    <h1 data-part="leftElbow">elbow</h1>
+    <h1 data-part="rightElbow">elbow</h1>
+    <h1 data-part="leftWrist">?</h1>
+    <h1 data-part="rightWrist">?</h1>
+    <h1 data-part="leftHip">?</h1>
+    <h1 data-part="rightHip">?</h1>
+    <h1 data-part="leftKnee">?</h1>
+    <h1 data-part="rightKnee">?</h1>
+    <h1 data-part="leftAnkle">?</h1>
+    <h1 data-part="rightAnkle">?</h1>
+
+    <script src="https://unpkg.com/@tensorflow/tfjs"></script>
+    <script src="https://unpkg.com/@tensorflow-models/posenet">
+    </script>
+    <script type="module">
+        import { PoseStream } from './poses.js';
+
+
+        // Video stream - in progress
+        const stream = new PoseStream({ delay: 0 });
+        stream.start()
+
+        stream.video.style.display = 'none'
+
+        stream.addEventListener('pose', (event) => {
+
+            for (const element of document.querySelectorAll('[data-part]')) {
+
+
+                for (const { part, position } of event.data.keypoints) {
+
+                    if (element.dataset.part == part) {
+                        let { x, y } = position
+
+                        element.style.left = ((x / stream.video.width) * 100) + '%'
+                        element.style.top = ((y / stream.video.height) * 100) + '%'
+                    }
+                }
+            }
+
+        })
+
+    </script>
+
+
+
+</body>
+
+</html>

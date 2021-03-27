@@ -31,10 +31,11 @@ export class PoseEvent extends Event {
 
 
 export class PoseStream extends EventTarget {
-    constructor(root) {
+    constructor(options = {}) {
         super()
-        this.root = root || document.body
-        this.delay = 100
+        this.root = options.root || document.body
+        this.delay = options.delay || 200
+
     }
     async start() {
         this.video = document.createElement('video')
@@ -84,7 +85,7 @@ export class PoseStream extends EventTarget {
                 console.log(e)
             }
 
-            await new Promise(resolve => setTimeout(resolve, 200))
+            await new Promise(resolve => setTimeout(resolve, this.delay))
 
         }
 
